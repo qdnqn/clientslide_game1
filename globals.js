@@ -1382,3 +1382,84 @@ function displayLeaderboardLevel2(leaderboardLevel2) {
 // Call loadLeaderboard when needed
 loadLeaderboardLevel2();
 
+//INTRO SCREEN - on load (target language)//
+
+// Function to update Storyline variables based on the selected language
+function updateVariablesBasedOnLanguage(xmlDoc) {
+    var player = GetPlayer();
+    var selectedLanguage = player.GetVar("targetLanguage");
+
+    // Iterate over each <Key> element in the XML
+    var keyElements = xmlDoc.getElementsByTagName("Key");
+    for (var i = 0; i < keyElements.length; i++) {
+        var keyElement = keyElements[i];
+        var variableName = keyElement.textContent.trim(); // Get the variable name from the <Key> element
+
+        // Find the corresponding language data for the selected language
+        var languageData = keyElement.parentElement.querySelector(selectedLanguage);
+
+        // Check if language data exists
+        if (languageData) {
+            var variableValue = languageData.textContent.trim(); // Get the variable value from the language data
+
+            // Update the Storyline variable with the retrieved text data
+            player.SetVar(variableName, variableValue);
+        } else {
+            console.error("Language data not found for language: " + selectedLanguage);
+        }
+    }
+}
+
+// Load XML file and update Storyline variables based on the selected language
+var xhr = new XMLHttpRequest();
+xhr.onreadystatechange = function() {
+    if (xhr.readyState == 4 && xhr.status == 200) {
+        var parser = new DOMParser();
+        var xmlDoc = parser.parseFromString(xhr.responseText, "application/xml");
+        updateVariablesBasedOnLanguage(xmlDoc);
+    }
+};
+xhr.open("GET", "https://academy.europa.eu/pluginfile.php/1230926/mod_resource/content/1/game_1.xml", true); // Replace 'https://example.com/your-xml-file.xml' with the actual URL of your XML file
+xhr.send();
+
+//INTRO SCREEN - on load (help language)//
+
+// Function to update Storyline variables based on the selected language
+function updateVariablesBasedOnLanguage(xmlDoc) {
+    var player = GetPlayer();
+    var selectedLanguage = player.GetVar("helpLanguage");
+
+    // Iterate over each <Key> element in the XML
+    var keyElements = xmlDoc.getElementsByTagName("Key");
+    for (var i = 0; i < keyElements.length; i++) {
+        var keyElement = keyElements[i];
+        var variableName = keyElement.textContent.trim(); // Get the variable name from the <Key> element
+
+        // Find the corresponding language data for the selected language
+        var languageData = keyElement.parentElement.querySelector(selectedLanguage);
+
+        // Check if language data exists
+        if (languageData) {
+            var variableValue = languageData.textContent.trim(); // Get the variable value from the language data
+
+            // Update the Storyline variable with the retrieved text data
+            player.SetVar(variableName, variableValue);
+        } else {
+            console.error("Language data not found for language: " + selectedLanguage);
+        }
+    }
+}
+
+// Load XML file and update Storyline variables based on the selected language
+var xhr = new XMLHttpRequest();
+xhr.onreadystatechange = function() {
+    if (xhr.readyState == 4 && xhr.status == 200) {
+        var parser = new DOMParser();
+        var xmlDoc = parser.parseFromString(xhr.responseText, "application/xml");
+        updateVariablesBasedOnLanguage(xmlDoc);
+    }
+};
+xhr.open("GET", "https://academy.europa.eu/pluginfile.php/1230879/mod_resource/content/1/game_1_help_language.xml", true); // Replace 'https://example.com/your-xml-file.xml' with the actual URL of your XML file
+xhr.send();
+
+
