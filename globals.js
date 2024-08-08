@@ -6,7 +6,7 @@ player.targetLanguageUrl = "https://academy.europa.eu/pluginfile.php/1230926/mod
 player.helpLanguageUrl = "https://academy.europa.eu/pluginfile.php/1230879/mod_resource/content/1/game_1_help_language.xml"
 
 function Player(player) {
-    this.player = player
+    this.player = player.GetPlayer()
     this.username = ""
     this.password = ""
     this.avatar = ""
@@ -271,12 +271,211 @@ function Player(player) {
         })
     }
 
+    this.UpdatePhrases = function(){
+        this.ReadDataUsername()
+
+        if (!this.player) {
+            return
+        }
+
+
+        let phrasesToUpdate = {}
+
+        for (let i = 1; i <= 50; i++) {
+            const tfPhrase = this.player.GetVar(`TF_Phrase_${i}`);
+            phrasesToUpdate[`TF_Phrase_${i}`] = tfPhrase;
+        }
+
+        let headers = {
+            'Content-Type': 'application/json'
+        }
+
+        let data = {
+            userName: this.username,
+            phrasesToUpdate: phrasesToUpdate,
+        }
+
+        let req = new Request(API_BASEURL + "/updatePhrases", "POST", headers, data)
+        let resp = req.Send()
+
+        resp.then((result) => {
+            if (result.status === 200) {
+                result.json().then((response) => {
+                    if (response.success) {
+                        this.player.SetVar("phraseUpdateStatus", 'Success');
+                    } else {
+                        this.player.SetVar("phraseUpdateStatus", 'Failed');
+                    }
+                })
+            } else {
+                this.player.SetVar("phraseUpdateStatus", 'Error');
+            }
+        })
+    }
+    this.UpdateWords = function(){
+        this.ReadDataUsername()
+
+        if (!this.player) {
+            return
+        }
+
+        let wordsToUpdate = {};
+
+        for (let i = 1; i <= 50; i++) {
+            const tfWord = this.player.GetVar(`TF_Word_${i}`);
+            wordsToUpdate[`Word_${i}`] = tfWord;
+        }
+
+        let headers = {
+            'Content-Type': 'application/json'
+        }
+
+        let data = {
+            userName: this.username,
+            wordsToUpdate: wordsToUpdate
+        };
+
+        let req = new Request(API_BASEURL + "/updateWords", "POST", headers, data)
+        let resp = req.Send()
+
+        resp.then((result) => {
+            if (result.status === 200) {
+                result.json().then((response) => {
+                    if (response.success) {
+                        this.player.SetVar("wordUpdateStatus", 'Success');
+                    } else {
+                        this.player.SetVar("wordUpdateStatus", 'Failed');
+                    }
+                })
+            } else {
+                this.player.SetVar("wordUpdateStatus", 'Error');
+            }
+        })
+    }
+    this.UpdateScoresLevel1 = function(){
+        this.ReadDataUsername()
+
+        if (!this.player) {
+            return
+        }
+
+        let yetiScoresLevel1 = this.player.GetVar("yetiScoresLevel1") || '';
+
+        var newScore = this.player.GetVar("scoreLevel1");
+
+        newScore = Number(newScore);
+
+        if (isNaN(newScore)) {
+            return;
+        }
+
+        const scoresArray = yetiScoresLevel1.split(',').map(Number);
+        const lastScore = scoresArray[scoresArray.length - 1];
+
+        if (newScore === lastScore) {
+            console.log("New score is the same as the last score. No update needed.");
+            return;
+        }
+
+        if (yetiScoresLevel1.length > 0) {
+            yetiScoresLevel1 += ',';
+        }
+
+        yetiScoresLevel1 += newScore;
+
+        let headers = {
+            'Content-Type': 'application/json'
+        }
+
+        let data = {
+            userName: this.username,
+            yetiScoresLevel1: yetiScoresLevel1.split(',').map(Number)
+        };
+
+        let req = new Request(API_BASEURL + "/yetiScoresLevel1", "POST", headers, data)
+        let resp = req.Send()
+
+        resp.then((result) => {
+            if (result.status === 200) {
+                result.json().then((response) => {
+                    if (response.success) {
+                        this.player.SetVar("scoreUpdateStatus", 'Success');
+                    } else {
+                        this.player.SetVar("scoreUpdateStatus", 'Failed');
+                    }
+                })
+            } else {
+                this.player.SetVar("scoreUpdateStatus", 'Error');
+            }
+        })
+    }
+    this.UpdateScoresLevel2 = function(){
+        this.ReadDataUsername()
+
+        if (!this.player) {
+            return
+        }
+
+        let yetiScoresLevel2 = this.player.GetVar("yetiScoresLevel2") || '';
+
+        var newScore = this.player.GetVar("scoreLevel2");
+
+        newScore = Number(newScore);
+
+        if (isNaN(newScore)) {
+            return;
+        }
+
+        const scoresArray = yetiScoresLevel2.split(',').map(Number);
+        const lastScore = scoresArray[scoresArray.length - 1];
+
+        if (newScore === lastScore) {
+            console.log("New score is the same as the last score. No update needed.");
+            return;
+        }
+
+        if (yetiScoresLevel2.length > 0) {
+            yetiScoresLevel2 += ',';
+        }
+
+        yetiScoresLevel2 += newScore;
+
+        let headers = {
+            'Content-Type': 'application/json'
+        }
+
+        let data = {
+            userName: this.username,
+            yetiScoresLevel2: yetiScoresLevel2.split(',').map(Number)
+        };
+
+        let req = new Request(API_BASEURL + "/yetiScoresLevel2", "POST", headers, data)
+        let resp = req.Send()
+
+        resp.then((result) => {
+            if (result.status === 200) {
+                result.json().then((response) => {
+                    if (response.success) {
+                        this.player.SetVar("scoreUpdateStatus", 'Success');
+                    } else {
+                        this.player.SetVar("scoreUpdateStatus", 'Failed');
+                    }
+                })
+            } else {
+                this.player.SetVar("scoreUpdateStatus", 'Error');
+            }
+        })
+    }
+
     this.UpdateLanguageVariables = function(){
         if (!this.player) {
             return
         }
 
         const languages = new Map();
+
+        this.targetLanguage = this.player.GetVar("targetLanguage");
+        this.helpLanguage = this.player.GetVar("helpLanguage");
 
         languages.set(this.targetLanguage, this.targetLanguageUrl);
         languages.set(this.helpLanguage, this.helpLanguageUrl);
@@ -335,7 +534,7 @@ function Player(player) {
 
         switch(len) {
             case 10:
-                let shuffledNumbers10 = player.GetVar("ShuffledNumbers10");
+                let shuffledNumbers10 = this.player.GetVar("ShuffledNumbers10");
 
                 if (shuffledNumbers10 && shuffledNumbers10.length > 0) {
                     nextNumber = shuffledNumbers10.shift();
@@ -345,7 +544,7 @@ function Player(player) {
                 }
                 break
             case 5:
-                let shuffledNumbers5 = player.GetVar("ShuffledNumbers5");
+                let shuffledNumbers5 = this.player.GetVar("ShuffledNumbers5");
 
                 if (shuffledNumbers5 && shuffledNumbers5.length > 0) {
                     nextNumber = shuffledNumbers5.shift();
